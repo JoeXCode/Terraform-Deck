@@ -31,7 +31,7 @@ export const wrapSlides: SlideData[] = [
         </div>
       </div>
     ),
-    notes: "One last look at the whole picture, tying all four parts together.\nYour configuration (Person 2) is read by Terraform Core (Person 4), which builds a dependency graph and a plan. The team reviews the plan through Git and a pipeline (Person 3). On apply, providers call the cloud APIs, state records the result, and the infrastructure now matches what you described (Person 1).\nNote the order: the provider acts at apply time, after the plan is reviewed.",
+    notes: "One last look at the whole picture, tying all four parts together.\nYour configuration (Saad) is read by Terraform Core (Joseph), which builds a dependency graph and a plan. The team reviews the plan through Git and a pipeline (Joseph). On apply, providers call the cloud APIs, state records the result, and the infrastructure now matches what you described (Saad).\nNote the order: the provider acts at apply time, after the plan is reviewed.",
   },
   {
     id: "wrap-faq-1", section: "wrap", type: "visual", title: "Common questions: concepts",

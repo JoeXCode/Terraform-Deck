@@ -8,7 +8,7 @@ import { DependencyGraph } from "@/components/DependencyGraph";
 import { ProjectExample } from "@/components/ProjectExample";
 import { highlightLine } from "@/components/highlight";
 
-// PERSON 4: Advanced, architecture and best practices.
+// Joseph: Advanced, architecture and best practices.
 // "How does Terraform work at a deeper level, and how should projects be designed?"
 // All code is generic, NOT from the reference project.
 const B = "#60A5FA", T = "#2DD4BF", O = "#FF9900", P = "#7B42BC";
@@ -231,7 +231,7 @@ terraform {
         <ConceptCard icon={TriangleAlert} name="Scale and safety" accent={P} items={["Large infrastructures: split into smaller states", "Provider coverage can lag new features", "Read plans for destroy and replace"]} />
       </div>
     ),
-    notes: "Person 1 listed limitations briefly; here is the detail. Be honest about the trade-offs.\nState: it grows with the estate, can contain secrets, and must be protected and backed up.\nReality vs code: manual changes cause drift. Existing infrastructure can be brought under management with import, which is useful but needs careful work to match the configuration.\nScale and safety: very large infrastructures are usually split across several states and modules. Provider support depends on each provider, so new service features can arrive later than the service itself. Some changes destroy and recreate resources, so read the plan for destroy and replace before applying; the prevent_destroy lifecycle setting can guard critical resources.",
+    notes: "Saad listed limitations briefly; here is the detail. Be honest about the trade-offs.\nState: it grows with the estate, can contain secrets, and must be protected and backed up.\nReality vs code: manual changes cause drift. Existing infrastructure can be brought under management with import, which is useful but needs careful work to match the configuration.\nScale and safety: very large infrastructures are usually split across several states and modules. Provider support depends on each provider, so new service features can arrive later than the service itself. Some changes destroy and recreate resources, so read the plan for destroy and replace before applying; the prevent_destroy lifecycle setting can guard critical resources.",
   },
   {
     id: "adv-compare", section: "advanced", type: "visual", title: "Different tools, different jobs",

@@ -8,16 +8,16 @@ import { StateDiagram } from "@/components/StateDiagram";
 import { WorkflowDiagram } from "@/components/WorkflowDiagram";
 import { chip } from "@/lib/ui";
 
-// PERSON 1: Fundamentals. "What is Terraform and why does it exist?"
+// Saad: Fundamentals. "What is Terraform and why does it exist?"
 // Built from the research document "Terraform Explained from Scratch" (Terraform_Fundamentals.docx).
-// The bucket example comes from that document; it is not taken from the reference project.
 const P = "#7B42BC", O = "#FF9900", T = "#2DD4BF", R = "#F87171";
 
 const hcl = `provider "aws" {
-  region = "us-east-1"
+  region = "eu-west-1"
 }
-resource "aws_s3_bucket" "logs" {
-  bucket = "my-logs-bucket-98765"
+
+resource "aws_s3_bucket" "state" {
+  bucket = "\${var.group_name}-tfstate-\${data.aws_caller_identity.me.account_id}"
 }`;
 
 const symbols: [string, string, string][] = [["+", T, "will be created"], ["~", O, "will be changed"], ["-", R, "will be destroyed"]];
@@ -31,51 +31,55 @@ export const fundamentalsSlides: SlideData[] = [
     id: "fund-problem", section: "fundamentals", type: "visual", title: "Clicking doesn't scale",
     subtitle: "Infrastructure as Code: describe your infrastructure in text files instead of clicking through menus.",
     body: (
-      <div className="w-full space-y-5">
-        <div className="grid grid-cols-2 gap-6">
-          <div className="rounded-xl border border-line bg-panel p-6">
-            <div className="flex items-center justify-between pb-3.5 border-b border-line">
-              <span className="font-mono text-2xl font-bold" style={{ color: O }}>By hand (ClickOps)</span>
-              <span className="rounded px-2.5 py-0.5 font-mono text-base text-mute bg-bg border border-line">Manual & Fragile</span>
+      <div className="w-full space-y-6">
+        <div className="grid grid-cols-2 gap-8">
+          <div className="rounded-xl border border-line bg-panel p-7 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between pb-3.5 border-b border-line">
+                <span className="font-mono text-2xl font-bold" style={{ color: O }}>By hand (ClickOps)</span>
+                <span className="rounded px-2.5 py-0.5 font-mono text-base text-mute bg-bg border border-line">Manual & Fragile</span>
+              </div>
+              <div className="mt-5">
+                <ArchitectureDiagram direction="row" compact accent={O} nodes={[
+                  { id: "b1", label: "Console clicks", sub: "no written record" },
+                  { id: "b2", label: "Built once", sub: "works today only" },
+                  { id: "b3", label: "Rebuild later", sub: "relies on memory" },
+                  { id: "b4", label: "Outage happens", sub: "what changed?" },
+                ]} />
+              </div>
             </div>
-            <div className="mt-4">
-              <ArchitectureDiagram direction="row" compact accent={O} nodes={[
-                { id: "b1", label: "Console clicks", sub: "no written record" },
-                { id: "b2", label: "Built once", sub: "it works on day 1" },
-                { id: "b3", label: "Repeat it", sub: "from human memory" },
-                { id: "b4", label: "Something breaks", sub: "what changed?" },
-              ]} />
-            </div>
-            <ul className="mt-5 space-y-2 text-lg text-mute border-t border-line/60 pt-4">
-              <li className="flex gap-2.5"><span className="mt-2 h-1.5 w-1.5 rounded-full shrink-0" style={{ background: O }} />Zero audit trail: no one knows who changed what setting or when.</li>
-              <li className="flex gap-2.5"><span className="mt-2 h-1.5 w-1.5 rounded-full shrink-0" style={{ background: O }} />Configuration drift: dev, staging, and prod silently diverge over time.</li>
-              <li className="flex gap-2.5"><span className="mt-2 h-1.5 w-1.5 rounded-full shrink-0" style={{ background: O }} />Slow recovery: recreating a wiped environment takes hours or days.</li>
+            <ul className="mt-6 space-y-3.5 text-xl text-mute border-t border-line/60 pt-5">
+              <li className="flex items-start gap-3"><span className="mt-2.5 h-2 w-2 rounded-full shrink-0" style={{ background: O }} /><span><b className="text-ink">No change history:</b> Nobody knows who clicked what, when it changed, or why it broke.</span></li>
+              <li className="flex items-start gap-3"><span className="mt-2.5 h-2 w-2 rounded-full shrink-0" style={{ background: O }} /><span><b className="text-ink">Environments drift apart:</b> Dev, staging, and prod silently become different because people make untracked manual edits.</span></li>
+              <li className="flex items-start gap-3"><span className="mt-2.5 h-2 w-2 rounded-full shrink-0" style={{ background: O }} /><span><b className="text-ink">Slow disaster recovery:</b> If an environment is deleted or fails, rebuilding it from memory takes hours or days.</span></li>
             </ul>
           </div>
 
-          <div className="rounded-xl border border-line bg-panel p-6">
-            <div className="flex items-center justify-between pb-3.5 border-b border-line">
-              <span className="font-mono text-2xl font-bold" style={{ color: P }}>As code (IaC)</span>
-              <span className="rounded px-2.5 py-0.5 font-mono text-base text-ink font-semibold" style={{ background: P + "22", border: `1px solid ${P}55` }}>Automated & Repeatable</span>
+          <div className="rounded-xl border border-line bg-panel p-7 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between pb-3.5 border-b border-line">
+                <span className="font-mono text-2xl font-bold" style={{ color: P }}>As code (IaC)</span>
+                <span className="rounded px-2.5 py-0.5 font-mono text-base text-ink font-semibold" style={{ background: P + "22", border: `1px solid ${P}55` }}>Automated & Repeatable</span>
+              </div>
+              <div className="mt-5">
+                <ArchitectureDiagram direction="row" compact accent={P} startDelay={0.5} nodes={[
+                  { id: "a1", label: "Write code", sub: "declarative .tf file" },
+                  { id: "a2", label: "Peer review", sub: "approved in Git" },
+                  { id: "a3", label: "terraform apply", sub: "automated build" },
+                  { id: "a4", label: "Rebuild anytime", sub: "100% identical copy" },
+                ]} />
+              </div>
             </div>
-            <div className="mt-4">
-              <ArchitectureDiagram direction="row" compact accent={P} startDelay={0.5} nodes={[
-                { id: "a1", label: "Write it down", sub: "declarative .tf file" },
-                { id: "a2", label: "Review", sub: "teammates, in Git" },
-                { id: "a3", label: "terraform apply", sub: "automated build" },
-                { id: "a4", label: "Rebuild", sub: "identical anytime" },
-              ]} />
-            </div>
-            <ul className="mt-5 space-y-2 text-lg text-mute border-t border-line/60 pt-4">
-              <li className="flex gap-2.5"><span className="mt-2 h-1.5 w-1.5 rounded-full shrink-0" style={{ background: P }} />Version controlled: every change is tracked, reviewed, and reversible in Git.</li>
-              <li className="flex gap-2.5"><span className="mt-2 h-1.5 w-1.5 rounded-full shrink-0" style={{ background: P }} />Deterministic: spin up 10 identical environments with the same configuration.</li>
-              <li className="flex gap-2.5"><span className="mt-2 h-1.5 w-1.5 rounded-full shrink-0" style={{ background: P }} />Self-documenting: code is the exact source of truth for all cloud architecture.</li>
+            <ul className="mt-6 space-y-3.5 text-xl text-mute border-t border-line/60 pt-5">
+              <li className="flex items-start gap-3"><span className="mt-2.5 h-2 w-2 rounded-full shrink-0" style={{ background: P }} /><span><b className="text-ink">Full version control:</b> Every change is tracked, reviewed by teammates, and easy to roll back in Git.</span></li>
+              <li className="flex items-start gap-3"><span className="mt-2.5 h-2 w-2 rounded-full shrink-0" style={{ background: P }} /><span><b className="text-ink">100% identical environments:</b> Spin up dev, staging, or production from the same code with zero guesswork.</span></li>
+              <li className="flex items-start gap-3"><span className="mt-2.5 h-2 w-2 rounded-full shrink-0" style={{ background: P }} /><span><b className="text-ink">Clear source of truth:</b> Your code files document the whole cloud setup—no hidden clicks or tribal knowledge.</span></li>
             </ul>
           </div>
         </div>
 
-        <div className={chip}>
-          <b>The Core Shift:</b> From clicking buttons in AWS Console to treating infrastructure like software: versioned, tested, peer-reviewed, and automated.
+        <div className="rounded-xl border border-line bg-panel p-4 text-xl text-mute flex items-center justify-between">
+          <div><b className="text-ink">The Big Shift:</b> Stop clicking buttons in cloud consoles. Describe your infrastructure in code so it can be versioned, reviewed, and built automatically.</div>
         </div>
       </div>
     ),
@@ -87,7 +91,7 @@ export const fundamentalsSlides: SlideData[] = [
     body: (
       <div className="grid w-full grid-cols-[1.1fr_1fr] items-center gap-10">
         <div className="space-y-5">
-          <CodeBlock code={hcl} accent={P} highlight={[4, 5, 6]} labels={{ 1: "Provider: the AWS plugin", 4: "Resource: what to build" }} />
+          <CodeBlock code={hcl} accent={P} highlight={[5, 6, 7]} labels={{ 1: "Provider: AWS plugin (eu-west-1)", 5: "Resource: state bucket with dynamic ID" }} />
           <div className="rounded-xl border border-line bg-panel p-5 text-lg text-mute leading-snug">
             <p className="font-semibold text-ink text-xl mb-1.5 font-mono" style={{ color: P }}>Declarative vs Imperative:</p>
             <p>• <b className="text-ink">Imperative (Scripts):</b> You write the step-by-step commands (create bucket, add tag). If it fails midway, re-running can break or create duplicate resources.</p>
@@ -97,7 +101,7 @@ export const fundamentalsSlides: SlideData[] = [
 
         <div className="space-y-5">
           <ArchitectureDiagram accent={P} nodes={[
-            { id: "d", label: "What you describe", sub: "one S3 bucket in us-east-1", edge: "compared with" },
+            { id: "d", label: "What you describe", sub: "one S3 bucket in eu-west-1", edge: "compared with" },
             { id: "e", label: "What exists", sub: "tracked in state + live AWS query", edge: "generates" },
             { id: "p", label: "Execution plan", sub: "precise list of creates, changes, deletes" }
           ]} />
@@ -107,81 +111,85 @@ export const fundamentalsSlides: SlideData[] = [
         </div>
       </div>
     ),
-    notes: "Terraform is declarative: you say 'I want one storage bucket in this region', not the steps to get there.\nTerraform compares your description with what it already manages, and works out what to create, change or remove.\nRead the file aloud. The provider is a plugin that lets Terraform talk to a platform like AWS. The resource is the thing to build; 'logs' is its name inside the code.\nPrecisely: it compares your configuration with its state, refreshed from the real infrastructure. State comes up shortly.\nThe bucket name must be globally unique, so yours will differ.\nIf asked: HashiCorp moved Terraform to the Business Source License in 2023; OpenTofu is a community fork.",
+    notes: "Terraform is declarative: you say 'I want one storage bucket in eu-west-1', not the manual steps to get there.\nHere the bucket name is built dynamically from var.group_name and the AWS account ID so it is guaranteed to be globally unique.\nTerraform compares your description with what it already manages, and works out what to create, change or remove.\nRead the file aloud. The provider connects Terraform to AWS in eu-west-1. The resource defines what to build; 'state' is its local name.\nPrecisely: it compares your configuration with state, refreshed from the live infrastructure.\nIf asked: HashiCorp moved Terraform to the Business Source License in 2023; OpenTofu is a community fork.",
   },
   {
     id: "fund-commands", section: "fundamentals", type: "visual", title: "The everyday commands",
     subtitle: "Day to day, you work with four core commands. Always read the plan before confirming.",
     body: (
       <div className="w-full space-y-6">
-        <div className="grid grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 gap-5">
           <ConceptCard
-            compact
             name="1. init"
             badge="Setup"
             accent={T}
             items={[
-              "Downloads required provider plugins (e.g. hashicorp/aws)",
-              "Initializes module packages",
-              "Connects to remote state backend",
+              "Downloads required provider plugins (e.g. AWS plugin for eu-west-1)",
+              "Initializes module packages and connects to remote state backend",
             ]}
-            footer="Run first, and whenever plugins or backend change"
+            footer="Run first, and whenever plugins or backend configurations change"
           />
           <ConceptCard
-            compact
             name="2. plan"
             badge="Preview"
             accent={O}
             items={[
-              "Queries real cloud state via APIs",
-              "Compares live resources to your .tf files",
-              "Outputs exact proposed changes with 0 risk",
+              "Queries real cloud state via live AWS APIs to check current reality",
+              "Compares live resources to your .tf files and outputs exact proposed changes",
             ]}
-            footer="Dry-run safety net: modifies nothing in cloud"
+            footer="Dry-run safety net: modifies nothing in your cloud environment"
           />
           <ConceptCard
-            compact
             name="3. apply"
             badge="Execute"
             accent={P}
             items={[
-              "Prompts for human confirmation (type 'yes')",
-              "Calls cloud APIs in dependency order",
-              "Updates terraform.tfstate upon completion",
+              "Prompts for explicit human confirmation (type 'yes') before executing",
+              "Calls cloud APIs in dependency order and updates terraform.tfstate upon completion",
             ]}
-            footer="Creates, updates, or deletes real infrastructure"
+            footer="Creates, modifies, or deletes real infrastructure"
           />
           <ConceptCard
-            compact
             name="4. destroy"
             badge="Teardown"
             accent={R}
             items={[
-              "Calculates reverse dependency graph",
-              "Deletes all resources managed by this project",
-              "Leaves untracked cloud resources untouched",
+              "Calculates reverse dependency graph to delete all managed resources safely",
+              "Tears down experimental infrastructure while leaving untracked resources untouched",
             ]}
-            footer="Used for ephemeral testing & cleanup"
+            footer="Used for ephemeral testing and cleanup to prevent unexpected cloud bills"
           />
         </div>
 
         <div>
-          <p className="mb-2.5 font-mono text-lg text-mute">Symbols you see in the plan output:</p>
-          <div className="grid grid-cols-3 gap-5">
-            {symbols.map(([s, c, t]) => (
-              <div key={s} className="rounded-xl border border-line bg-panel p-4 flex items-center gap-5">
-                <span className="font-mono text-4xl font-bold" style={{ color: c }}>{s}</span>
-                <div>
-                  <div className="font-mono text-lg font-bold" style={{ color: c }}>{s === "+" ? "Create" : s === "~" ? "Update" : "Destroy"}</div>
-                  <div className="text-base text-mute">{t}</div>
-                </div>
+          <p className="mb-3 font-mono text-xl text-mute">Key symbols in the plan preview:</p>
+          <div className="grid grid-cols-3 gap-6">
+            <div className="rounded-xl border border-line bg-panel p-5 flex items-center gap-6">
+              <span className="font-mono text-5xl font-bold" style={{ color: T }}>+</span>
+              <div>
+                <div className="font-mono text-2xl font-bold" style={{ color: T }}>+ Create</div>
+                <div className="text-lg text-mute">Will create a brand-new cloud resource</div>
               </div>
-            ))}
+            </div>
+            <div className="rounded-xl border border-line bg-panel p-5 flex items-center gap-6">
+              <span className="font-mono text-5xl font-bold" style={{ color: O }}>~</span>
+              <div>
+                <div className="font-mono text-2xl font-bold" style={{ color: O }}>~ Update</div>
+                <div className="text-lg text-mute">Will modify existing resource in-place</div>
+              </div>
+            </div>
+            <div className="rounded-xl border border-line bg-panel p-5 flex items-center gap-6">
+              <span className="font-mono text-5xl font-bold" style={{ color: R }}>-</span>
+              <div>
+                <div className="font-mono text-2xl font-bold" style={{ color: R }}>- Destroy</div>
+                <div className="text-lg text-mute">Will delete this cloud resource completely</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     ),
-    notes: "Four commands in daily use.\ninit downloads the provider plugins; run it first. (It also installs modules and sets up where state is stored.)\nplan shows a preview and touches nothing. + will be created, ~ changed, - destroyed. A replacement shows as -/+.\napply makes the changes real, after you confirm.\ndestroy tears down what this configuration manages when you are done experimenting.\nHabit to teach: read the plan, every time. To apply exactly what you reviewed, save it: terraform plan -out=tfplan, then terraform apply tfplan.",
+    notes: "Four commands in daily use.\ninit downloads provider plugins; run it first whenever code or backends change.\nplan previews the changes without touching live infrastructure: + create, ~ update, - destroy. (A replace shows as -/+).\napply makes changes real, only after you type 'yes'.\ndestroy tears down everything managed by this project.\nGolden rule: always read the full plan output before confirming an apply.",
   },
   {
     id: "fund-state", section: "fundamentals", type: "side", title: "State",
@@ -190,15 +198,16 @@ export const fundamentalsSlides: SlideData[] = [
       <div className="flex w-full items-center gap-10">
         <div className="flex-1 space-y-6">
           <StateDiagram accent={P} />
-          <div className="rounded-xl border border-line bg-panel p-4 font-mono text-lg text-mute">
+          <div className="rounded-xl border border-line bg-panel p-5 font-mono text-lg text-mute">
             <span className="text-ink font-semibold">Under the hood in terraform.tfstate:</span>
-            <pre className="mt-2 text-ink/90 overflow-x-auto text-base bg-bg p-2.5 rounded-lg border border-line/60">
+            <pre className="mt-2.5 text-ink/90 overflow-x-auto text-base bg-bg p-3.5 rounded-lg border border-line/60">
 {`"resources": [
   {
     "type": "aws_s3_bucket",
-    "name": "logs",
-    "id": "my-logs-bucket-98765",
-    "arn": "arn:aws:s3:::my-logs-bucket-98765"
+    "name": "state",
+    "id": "mygroup-tfstate-123456789012",
+    "arn": "arn:aws:s3:::mygroup-tfstate-123456789012",
+    "region": "eu-west-1"
   }
 ]`}
             </pre>
@@ -219,7 +228,7 @@ export const fundamentalsSlides: SlideData[] = [
         </div>
       </div>
     ),
-    notes: "This is the concept that trips up beginners.\nTerraform keeps a file, terraform.tfstate, recording the resources it manages. Without it, Terraform cannot tell what is its own.\nThree rules: do not edit it by hand; keep it out of Git because it can contain secrets; in a team, store it remotely.\nRemote state with locking stops two people making conflicting changes at the same time. Person 3 covers that.\nPerson 2 shows how state fits with the configuration.",
+    notes: "This is the concept that trips up beginners.\nTerraform keeps a file, terraform.tfstate, recording the resources it manages. Without it, Terraform cannot tell what is its own.\nNotice the under-the-hood record for our state bucket in eu-west-1: it maps the resource name 'state' to the real bucket ID and ARN.\nThree rules: do not edit it by hand; keep it out of Git because it can contain secrets; in a team, store it remotely.\nRemote state with locking stops two people making conflicting changes at the same time. Joseph covers that.\nSaad shows how state fits with the configuration.",
   },
   {
     id: "fund-reuse", section: "fundamentals", type: "visual", title: "Making code reusable",
@@ -235,17 +244,17 @@ export const fundamentalsSlides: SlideData[] = [
   type    = string
   default = "dev"
 }`}
-          text="Parameterize code so the same files build dev, staging, and prod without duplicating code."
+          text="Values passed in from outside - like function inputs. Lets you use the exact same code files to build dev, staging, and prod without duplicating code."
         />
         <ConceptCard
           icon={Upload}
           name="Outputs"
           badge="Results"
           accent={T}
-          code={`output "url" {
-  value = aws_lb.web.dns_name
+          code={`output "bucket_arn" {
+  value = aws_s3_bucket.state.arn
 }`}
-          text="Print useful values after apply (like load balancer URLs, server IPs, and database hostnames)."
+          text="Values printed on your screen after apply - like function return values. Exposes newly created details like bucket ARNs, server IPs, and URLs."
         />
         <ConceptCard
           icon={Package}
@@ -256,7 +265,7 @@ export const fundamentalsSlides: SlideData[] = [
   source = "./modules/vpc"
   cidr   = "10.0.0.0/16"
 }`}
-          text="Package related resources into clean, reusable components with defined inputs and outputs."
+          text="Bundles of related resources packaged together - like reusable code libraries. Lets you deploy an entire network architecture in just 3 lines."
         />
         <ConceptCard
           icon={Search}
@@ -266,57 +275,107 @@ export const fundamentalsSlides: SlideData[] = [
           code={`data "aws_vpc" "default" {
   default = true
 }`}
-          text="Query information about existing resources in AWS without creating or managing them in code."
+          text="Read-only queries to fetch details about resources that already exist in AWS. Reads information without creating or modifying anything in code."
         />
       </div>
     ),
-    notes: "As you learn, you will want reusable code. Four ideas, one line each.\nVariables pass in values such as an environment name, so the same code can build dev, test and prod.\nOutputs print results after an apply, such as a server's IP address.\nModules bundle related resources into a reusable package.\nData sources read information about things that already exist.\nPerson 2 explains how each fits into a configuration.",
+    notes: "Think of Terraform like writing standard functions in programming:\n1. Variables are your inputs: pass in 'dev' or 'prod' so one file builds any environment.\n2. Outputs are return values: they tell you what was created, like a server IP or bucket ARN.\n3. Modules are reusable libraries: package 10 resources together so teams don't repeat code.\n4. Data Sources are read-only lookups: query existing AWS resources without creating new ones.\nSaad explains how each fits into a configuration.",
   },
   {
     id: "fund-mistakes", section: "fundamentals", type: "visual", title: "Mistakes to avoid early",
-    subtitle: "Three common pitfalls that trap beginners, and how professionals prevent them.",
+    subtitle: "Three common beginner mistakes, what goes wrong, and how to stay safe.",
     body: (
-      <div className="grid w-full grid-cols-3 gap-8">
-        <ConceptCard
-          icon={Hand}
-          name="1. Manual Console Edits"
-          badge="Causes Drift"
-          accent={O}
-          items={[
-            "Pitfall: Tweaking security groups or firewall ports directly in AWS Console.",
-            "Consequence: Configuration drift — code and reality diverge silently.",
-            "Fix: Make every change in .tf code; run 'terraform plan' to catch drift.",
-          ]}
-        />
-        <ConceptCard
-          icon={KeyRound}
-          name="2. Hardcoding Secrets"
-          badge="Security Leak"
-          accent={R}
-          items={[
-            "Pitfall: Writing database passwords or AWS secret keys directly in files.",
-            "Consequence: Credentials leaked to Git repositories and version history.",
-            "Fix: Inject secrets via AWS SSM Parameter Store, Secrets Manager, or TF_VAR_.",
-          ]}
-        />
-        <ConceptCard
-          icon={Wallet}
-          name="3. Abandoned Resources"
-          badge="Surprise Bills"
-          accent={T}
-          items={[
-            "Pitfall: Leaving experimental EC2 instances, ALBs, and databases running.",
-            "Consequence: Cloud charges compound rapidly when forgotten.",
-            "Fix: Always run 'terraform destroy' when testing ends; use resource tagging.",
-          ]}
-        />
+      <div className="w-full space-y-6">
+        <div className="grid grid-cols-3 gap-7">
+          <div className="rounded-2xl border border-line bg-panel p-7 flex flex-col justify-between" style={{ boxShadow: `inset 4px 0 0 ${O}` }}>
+            <div>
+              <div className="flex items-center justify-between pb-3.5 border-b border-line">
+                <div className="flex items-center gap-3">
+                  <Hand size={32} color={O} />
+                  <span className="font-mono text-2xl font-bold text-ink">1. Console Edits</span>
+                </div>
+                <span className="rounded px-2.5 py-1 font-mono text-sm font-semibold uppercase tracking-wider" style={{ background: O + "22", color: O, border: `1px solid ${O}44` }}>Causes Drift</span>
+              </div>
+              <ul className="mt-5 space-y-4 text-xl text-mute">
+                <li className="flex items-start gap-3">
+                  <span className="mt-2.5 h-2 w-2 rounded-full shrink-0" style={{ background: O }} />
+                  <span><b className="text-ink">The mistake:</b> Clicking buttons in AWS Console to tweak firewall rules or server settings by hand.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="mt-2.5 h-2 w-2 rounded-full shrink-0" style={{ background: O }} />
+                  <span><b className="text-ink">The danger:</b> Code and reality silently drift apart - teammates have no record of what changed or why.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="mt-2.5 h-2 w-2 rounded-full shrink-0" style={{ background: O }} />
+                  <span><b className="text-ink">The rule:</b> Make every single change in your .tf code and apply it through Terraform.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-line bg-panel p-7 flex flex-col justify-between" style={{ boxShadow: `inset 4px 0 0 ${R}` }}>
+            <div>
+              <div className="flex items-center justify-between pb-3.5 border-b border-line">
+                <div className="flex items-center gap-3">
+                  <KeyRound size={32} color={R} />
+                  <span className="font-mono text-2xl font-bold text-ink">2. Hardcoding Secrets</span>
+                </div>
+                <span className="rounded px-2.5 py-1 font-mono text-sm font-semibold uppercase tracking-wider" style={{ background: R + "22", color: R, border: `1px solid ${R}44` }}>Security Leak</span>
+              </div>
+              <ul className="mt-5 space-y-4 text-xl text-mute">
+                <li className="flex items-start gap-3">
+                  <span className="mt-2.5 h-2 w-2 rounded-full shrink-0" style={{ background: R }} />
+                  <span><b className="text-ink">The mistake:</b> Writing database passwords or AWS secret keys directly inside plain text files.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="mt-2.5 h-2 w-2 rounded-full shrink-0" style={{ background: R }} />
+                  <span><b className="text-ink">The danger:</b> Secrets get pushed into Git history - anyone with repository access can see and use them.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="mt-2.5 h-2 w-2 rounded-full shrink-0" style={{ background: R }} />
+                  <span><b className="text-ink">The rule:</b> Pass secrets through environment variables or secure cloud secret vaults.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-line bg-panel p-7 flex flex-col justify-between" style={{ boxShadow: `inset 4px 0 0 ${T}` }}>
+            <div>
+              <div className="flex items-center justify-between pb-3.5 border-b border-line">
+                <div className="flex items-center gap-3">
+                  <Wallet size={32} color={T} />
+                  <span className="font-mono text-2xl font-bold text-ink">3. Abandoned Servers</span>
+                </div>
+                <span className="rounded px-2.5 py-1 font-mono text-sm font-semibold uppercase tracking-wider" style={{ background: T + "22", color: T, border: `1px solid ${T}44` }}>Surprise Bills</span>
+              </div>
+              <ul className="mt-5 space-y-4 text-xl text-mute">
+                <li className="flex items-start gap-3">
+                  <span className="mt-2.5 h-2 w-2 rounded-full shrink-0" style={{ background: T }} />
+                  <span><b className="text-ink">The mistake:</b> Leaving practice databases, virtual machines, and load balancers running overnight.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="mt-2.5 h-2 w-2 rounded-full shrink-0" style={{ background: T }} />
+                  <span><b className="text-ink">The danger:</b> Cloud charges accumulate hour by hour - forgotten test setups cause sudden bill shocks.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="mt-2.5 h-2 w-2 rounded-full shrink-0" style={{ background: T }} />
+                  <span><b className="text-ink">The rule:</b> When testing is done, always run 'terraform destroy' to cleanly remove resources.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-line bg-panel p-4 text-xl text-mute flex items-center justify-between">
+          <div><b className="text-ink">Golden Rule:</b> Treat infrastructure like production software - manage it through code, keep secrets out of Git, and destroy test resources when finished.</div>
+        </div>
       </div>
     ),
-    notes: "Three habits that save you early.\nDo not change Terraform-managed resources by hand in the console; the real world drifts away from your code. Person 3 returns to drift.\nNever hardcode passwords or access keys in your files. Secrets can also end up in state, so state needs protecting too.\nDestroy your practice resources. Forgotten test servers are a classic source of surprise bills.",
+    notes: "Three practical habits that keep you safe:\n1. Never edit resources by hand in the console - it creates configuration drift. Joseph returns to drift later.\n2. Never hardcode passwords or API keys in files. Inject them securely.\n3. Always destroy practice resources when finished - forgotten test servers are the #1 cause of surprise bills.",
   },
   {
     id: "fund-takeaway", section: "fundamentals", type: "visual", title: "Takeaway",
     body: <KeyTakeaway accent={P} text="Describe the infrastructure you want. Terraform works out how to build it. Always read the plan." points={["Declarative", "init, plan, apply", "State"]} />,
-    notes: "One breath: clicking does not scale, so we describe infrastructure as code. Terraform is declarative, works through init, plan and apply, and keeps track of what it manages in state.\nHand off to Person 2: what are the building blocks you actually write?",
+    notes: "One breath: clicking does not scale, so we describe infrastructure as code. Terraform is declarative, works through init, plan and apply, and keeps track of what it manages in state.\nHand off to Saad: what are the building blocks you actually write?",
   },
 ];

@@ -1,2 +1,2 @@
-import { PresenterView } from "@/components/PresenterView";
-export default function Page() { return <PresenterView />; }
+import { redirect } from "next/navigation";
+export default function Page() { redirect("/"); }

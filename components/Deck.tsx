@@ -5,7 +5,7 @@ import type { Section, SlideData } from "@/lib/types";
 import { useDeck } from "@/lib/useDeck";
 import { useDeckKeys } from "@/lib/useDeckKeys";
 import { useIdle } from "@/lib/useIdle";
-import { exitFullscreen, openPresenter, toggleFullscreen } from "@/lib/fullscreen";
+import { exitFullscreen, toggleFullscreen } from "@/lib/fullscreen";
 import { Stage } from "./Stage";
 import { Slide } from "./Slide";
 import { SlideHeader } from "./SlideHeader";
@@ -32,7 +32,7 @@ export function Deck({ slides, sections }: { slides: SlideData[]; sections: Sect
     ArrowRight: deck.next, ArrowDown: deck.next, PageDown: deck.next, Space: deck.next,
     ArrowLeft: deck.prev, ArrowUp: deck.prev, PageUp: deck.prev,
     Home: deck.first, End: deck.last,
-    f: toggleFullscreen, p: openPresenter, Escape: exitFullscreen,
+    f: toggleFullscreen, Escape: exitFullscreen,
   });
 
   const slide = slides[deck.index];
@@ -54,7 +54,7 @@ export function Deck({ slides, sections }: { slides: SlideData[]; sections: Sect
         <SlideHeader sections={sections} current={section.id} index={deck.index} total={deck.total} />
         <ProgressBar index={deck.index} total={deck.total} accent={section.accent} />
         <NavigationControls
-          visible={!idle} onPrev={deck.prev} onNext={deck.next} onFullscreen={toggleFullscreen} onPresenter={openPresenter}
+          visible={!idle} onPrev={deck.prev} onNext={deck.next} onFullscreen={toggleFullscreen}
           atStart={deck.index === 0} atEnd={deck.index === deck.total - 1}
         />
       </Stage>

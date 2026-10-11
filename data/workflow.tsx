@@ -5,7 +5,7 @@ import { ConceptCard } from "@/components/ConceptCard";
 import { KeyTakeaway } from "@/components/KeyTakeaway";
 import { ProjectExample } from "@/components/ProjectExample";
 
-// PERSON 3: Workflow & Collaboration.
+// Joseph: Workflow & Collaboration.
 // "How does Terraform move from code on a developer's machine to safely managed infrastructure?"
 const O = "#FF9900", T = "#2DD4BF", B = "#60A5FA";
 
@@ -300,6 +300,6 @@ export const workflowSlides: SlideData[] = [
   {
     id: "wf-takeaway", section: "workflow", type: "visual", title: "Takeaway",
     body: <KeyTakeaway accent={O} text="Code is reviewed, planned, then applied through a pipeline. Remote state with locking keeps the whole team safe." points={["Plan before apply", "Pull requests", "Remote state", "Locking"]} />,
-    notes: "Answer the section question: Terraform moves from a developer's machine to managed infrastructure through a reviewed, repeatable path. Plan shows the change, a pull request gets it reviewed, a pipeline applies it, and shared state with locking stops teammates from colliding.\nHand off to Person 4: how does Terraform work underneath, and how should projects be designed?",
+    notes: "Answer the section question: Terraform moves from a developer's machine to managed infrastructure through a reviewed, repeatable path. Plan shows the change, a pull request gets it reviewed, a pipeline applies it, and shared state with locking stops teammates from colliding.\nHand off to Joseph: how does Terraform work underneath, and how should projects be designed?",
   },
 ];

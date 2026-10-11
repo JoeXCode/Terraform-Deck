@@ -7,26 +7,34 @@ import { KeyTakeaway } from "@/components/KeyTakeaway";
 import { ProjectExample } from "@/components/ProjectExample";
 import { StateDiagram } from "@/components/StateDiagram";
 
-// PERSON 2: Core concepts. "What are the building blocks of Terraform?"
+// Saad: Core concepts. "What are the building blocks of Terraform?"
 // One running example (generic AWS S3), NOT taken from the reference project.
 const T = "#2DD4BF", P = "#7B42BC";
 
 const config = `provider "aws" {
-  region = "us-east-1"
+  region = "eu-west-1"
 }
-variable "env" {
-  type    = string
-  default = "dev"
+
+variable "github_org" {
+  type = string
 }
+
+variable "github_repo" {
+  type = string
+}
+
 locals {
-  name = "app-\${var.env}"
+  repo = "\${var.github_org}/\${var.github_repo}"
 }
+
 data "aws_caller_identity" "current" {}
-resource "aws_s3_bucket" "example" {
-  bucket = local.name
+
+resource "aws_s3_bucket" "state" {
+  bucket = "\${var.github_org}-\${var.github_repo}-state"
 }
+
 output "bucket_arn" {
-  value = aws_s3_bucket.example.arn
+  value = aws_s3_bucket.state.arn
 }`;
 
 export const coreSlides: SlideData[] = [
@@ -43,14 +51,15 @@ export const coreSlides: SlideData[] = [
           code={config}
           compact
           accent={T}
-          highlight={[12, 13, 14]}
+          highlight={[19, 20, 21]}
           labels={{
-            1: "Provider: Cloud plugin",
-            4: "Variable: Input argument",
-            8: "Local: Reusable computation",
-            11: "Data: Read-only query",
-            12: "Resource: Managed cloud object",
-            15: "Output: Result exposed",
+            1: "Provider: Cloud plugin (eu-west-1)",
+            5: "Variable: Input argument (org)",
+            9: "Variable: Input argument (repo)",
+            13: "Local: Reusable computation",
+            17: "Data: Read-only query",
+            19: "Resource: Managed cloud object",
+            23: "Output: Result exposed",
           }}
         />
         <div className="rounded-xl border border-line bg-panel p-3.5 font-mono text-base text-mute">
@@ -58,7 +67,7 @@ export const coreSlides: SlideData[] = [
         </div>
       </div>
     ),
-    notes: "A Terraform configuration is a set of .tf files in a directory. Terraform reads all of them together. They are written in HCL, HashiCorp Configuration Language, which is made of blocks, arguments and expressions.\nGo down the labels: the provider block configures the plugin for a platform. A variable is an input. Locals are named values you reuse. A data source reads something that already exists, and does not create it. A resource is something Terraform creates and manages. An output exposes a value.\nThe highlighted resource is our running example.",
+    notes: "A Terraform configuration is a set of .tf files in a directory. Terraform reads all of them together. They are written in HCL, HashiCorp Configuration Language, which is made of blocks, arguments and expressions.\nGo down the labels:\n- Provider: sets up the AWS plugin in eu-west-1.\n- Variables: input arguments (github_org and github_repo).\n- Local: constructs a reusable 'repo' string by combining the two variables.\n- Data source: reads your current AWS account identity without creating anything.\n- Resource: creates the state S3 bucket in AWS.\n- Output: prints the resulting bucket ARN after apply.\nThe highlighted resource is our running example.",
   },
   {
     id: "core-anatomy", section: "core", type: "visual", title: "Anatomy of a resource",
@@ -156,7 +165,7 @@ depends_on = [aws_lb_listener.http]`}
         </div>
       </div>
     ),
-    notes: "Follow the chain: the variable env feeds the local name, the local is used by the bucket, and the output exposes an attribute of the bucket. Each arrow is a reference: var., local., or resource type and name.\nDependencies: when one resource refers to another's attribute, Terraform sees an implicit dependency and creates the other one first. When there is no reference but order still matters, depends_on declares it explicitly.\nPerson 4 goes deeper on the dependency graph.",
+    notes: "Follow the chain: the variable env feeds the local name, the local is used by the bucket, and the output exposes an attribute of the bucket. Each arrow is a reference: var., local., or resource type and name.\nDependencies: when one resource refers to another's attribute, Terraform sees an implicit dependency and creates the other one first. When there is no reference but order still matters, depends_on declares it explicitly.\nJoseph goes deeper on the dependency graph.",
   },
   {
     id: "core-state", section: "core", type: "side", title: "State: what Terraform believes exists",
@@ -191,11 +200,11 @@ depends_on = [aws_lb_listener.http]`}
         </div>
       </div>
     ),
-    notes: "Your configuration is the DESIRED state. The real infrastructure is the ACTUAL state. State is Terraform's own record of which real objects match which resources in your configuration, plus their attributes. By default it is stored in a file called terraform.tfstate.\nWhen you run plan, Terraform compares configuration with state, refreshes it from the real infrastructure, and shows the difference.\nState can contain sensitive values, so it needs protecting. Person 3 covers remote state, locking and drift.",
+    notes: "Your configuration is the DESIRED state. The real infrastructure is the ACTUAL state. State is Terraform's own record of which real objects match which resources in your configuration, plus their attributes. By default it is stored in a file called terraform.tfstate.\nWhen you run plan, Terraform compares configuration with state, refreshes it from the real infrastructure, and shows the difference.\nState can contain sensitive values, so it needs protecting. Joseph covers remote state, locking and drift.",
   },
   {
     id: "core-takeaway", section: "core", type: "visual", title: "Takeaway",
     body: <KeyTakeaway accent={T} text="A Terraform project is configuration that declares the state you want. State records what actually exists." points={["Providers", "Resources", "References", "State"]} />,
-    notes: "So, what is inside a Terraform project? Blocks written in HCL: providers, resources, data sources, variables, locals and outputs. References connect them and set the order. State remembers what Terraform has built.\nHand off to Person 3: how do teams actually run this, day to day?",
+    notes: "So, what is inside a Terraform project? Blocks written in HCL: providers, resources, data sources, variables, locals and outputs. References connect them and set the order. State remembers what Terraform has built.\nHand off to Joseph: how do teams actually run this, day to day?",
   },
 ];

@@ -21,9 +21,9 @@ export function NodeBox({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: state === "dim" ? 0.35 : 1, y: 0 }}
       transition={{ delay, duration: 0.2 }}
-      className={`rounded-xl border bg-panel text-center transition-all ${
+      className={`rounded-xl border bg-panel text-center transition-all flex flex-col justify-center ${
         compact
-          ? "shrink min-w-0 px-3.5 py-2.5"
+          ? "flex-1 min-w-0 px-3 py-3 min-h-[80px]"
           : "shrink-0 px-6 py-4"
       }`}
       style={{
@@ -31,9 +31,9 @@ export function NodeBox({
         background: state === "active" ? accent + "1A" : undefined,
       }}
     >
-      <div className={`font-semibold truncate ${compact ? "text-lg" : "text-2xl"}`}>{label}</div>
+      <div className={`font-semibold leading-snug break-words ${compact ? "text-lg" : "text-2xl"}`}>{label}</div>
       {sub && (
-        <div className={`mt-0.5 font-mono text-mute truncate ${compact ? "text-sm" : "text-lg"}`}>
+        <div className={`mt-1 font-mono text-mute leading-snug break-words ${compact ? "text-sm" : "text-lg"}`}>
           {sub}
         </div>
       )}

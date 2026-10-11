@@ -1,4 +1,4 @@
-// ARCHIVE of the earlier Person 1 draft (architecture slide, benefits/use cases/limitations). Not imported anywhere.
+// ARCHIVE of the earlier Saad draft (architecture slide, benefits/use cases/limitations). Not imported anywhere.
 import { CircleCheck, Layers, TriangleAlert } from "lucide-react";
 import type { SlideData } from "@/lib/types";
 import { ArchitectureDiagram } from "@/components/ArchitectureDiagram";
@@ -7,7 +7,7 @@ import { ConceptCard } from "@/components/ConceptCard";
 import { KeyTakeaway } from "@/components/KeyTakeaway";
 import { ProjectExample } from "@/components/ProjectExample";
 
-// PERSON 1: Fundamentals. "What is Terraform and why does it exist?"
+// Saad: Fundamentals. "What is Terraform and why does it exist?"
 // The HCL below is a generic AWS example, NOT taken from the reference project.
 const P = "#7B42BC", O = "#FF9900", T = "#2DD4BF";
 
@@ -82,7 +82,7 @@ export const fundamentalsSlides: SlideData[] = [
         </div>
       </div>
     ),
-    notes: "Walk top to bottom. You write configuration. Terraform Core reads it, compares it with state and the real infrastructure, and builds a plan.\nProviders are plugins that translate resources into calls to a platform's API, such as AWS.\nState is Terraform's record of the resources it manages.\nPerson 4 goes deeper on Core, providers and the dependency graph.\nTHE PLACEHOLDER: fill in the real provider and resource from the reference project.",
+    notes: "Walk top to bottom. You write configuration. Terraform Core reads it, compares it with state and the real infrastructure, and builds a plan.\nProviders are plugins that translate resources into calls to a platform's API, such as AWS.\nState is Terraform's record of the resources it manages.\nJoseph goes deeper on Core, providers and the dependency graph.\nTHE PLACEHOLDER: fill in the real provider and resource from the reference project.",
   },
   {
     id: "fund-fit", section: "fundamentals", type: "visual", title: "Where it fits",
@@ -93,11 +93,11 @@ export const fundamentalsSlides: SlideData[] = [
         <ConceptCard icon={TriangleAlert} name="Limitations" accent={O} items={["State must be stored and protected", "Changes outside Terraform cause drift", "Provisions infrastructure; not software configuration", "Concepts and HCL take time to learn"]} />
       </div>
     ),
-    notes: "Benefits: the same configuration can be applied again, changes go through review, and terraform plan previews them before anything changes.\nUse cases: provisioning cloud resources, managing several environments, and anything with a provider, including some SaaS platforms.\nLimitations, said honestly: state can contain sensitive values and must be protected; changes made outside Terraform create drift; it provisions infrastructure rather than configuring software on servers (tools like Ansible fill that gap); and there is a learning curve.\nPerson 3 covers state and drift in detail.",
+    notes: "Benefits: the same configuration can be applied again, changes go through review, and terraform plan previews them before anything changes.\nUse cases: provisioning cloud resources, managing several environments, and anything with a provider, including some SaaS platforms.\nLimitations, said honestly: state can contain sensitive values and must be protected; changes made outside Terraform create drift; it provisions infrastructure rather than configuring software on servers (tools like Ansible fill that gap); and there is a learning curve.\nJoseph covers state and drift in detail.",
   },
   {
     id: "fund-takeaway", section: "fundamentals", type: "visual", title: "Takeaway",
     body: <KeyTakeaway accent={P} text="Infrastructure used to be built by hand. Terraform lets you describe it in code, and keeps it repeatable." points={["Declarative", "Providers", "State"]} />,
-    notes: "Recap in one breath: manual infrastructure does not scale; IaC puts it in reviewable files; Terraform is a declarative IaC tool that talks to platforms through providers and tracks what it manages in state.\nHand off to Person 2: so what are the building blocks you write?",
+    notes: "Recap in one breath: manual infrastructure does not scale; IaC puts it in reviewable files; Terraform is a declarative IaC tool that talks to platforms through providers and tracks what it manages in state.\nHand off to Saad: so what are the building blocks you write?",
   },
 ];
