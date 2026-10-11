@@ -6,7 +6,7 @@ const parts = [
   { num: "01", tag: "WHY", topic: "Fundamentals", desc: "Why IaC matters, the 4 daily commands, state basics, and rookie mistakes to avoid.", accent: "#7B42BC", presenter: "Saad" },
   { num: "02", tag: "WHAT", topic: "Core Concepts", desc: "The building blocks of HCL: providers, resources, variables, implicit dependencies, and state reconciliation.", accent: "#2DD4BF", presenter: "Saad" },
   { num: "03", tag: "HOW", topic: "Workflow & Teams", desc: "Local CLI habits, S3 remote state, DynamoDB state locking, and automated CI/CD PR pipelines.", accent: "#FF9900", presenter: "Joseph" },
-  { num: "04", tag: "DEEPER", topic: "Advanced & Architecture", desc: "Under the hood (Core vs gRPC), DAG dependency graphs, modules, safety patterns, and tool evaluation.", accent: "#60A5FA", presenter: "Joseph" },
+  { num: "04", tag: "DEEPER", topic: "Advanced & Architecture", desc: "Dependency graphs, automatic parallelism, production standards, and tool evaluation.", accent: "#60A5FA", presenter: "Joseph" },
 ];
 
 export const openingSlides: SlideData[] = [
